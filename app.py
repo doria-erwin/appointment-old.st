@@ -173,6 +173,18 @@ def showAll():
     return {"appointments": appointments}
 
 
+@app.route('/appointment/<int:id>', methods=['DELETE'])
+def delete(id):
+    appointment = Appointment.query.get(id)
+    if appointment is None:
+        return {"errors": "Appointment not found"}, 422
+
+    if repo.deleteById(Comment, appointment.comment.id) and repo.deleteById(Appointment, id):
+        return "Successfully deleted"
+    else:
+        return {"errors": "Unable to delete appointment please try again later"}, 422
+
+
 if __name__ == "__main__":
     app.debug = True
     http_server = WSGIServer((HOST, PORT), app)

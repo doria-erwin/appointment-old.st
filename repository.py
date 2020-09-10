@@ -20,6 +20,14 @@ class repository:
         self.session.commit()
         return obj
 
+    def deleteById(self, obj, id):
+        try:
+            self.session.query(obj).filter_by(id=id).delete()
+            self.session.commit()
+            return True
+        except:
+            return False
+
     def findAppointmentBetweenDateTime(self, data):
         return self.Appointment.query.filter(self.Appointment.endTime.between(data['startTime'] + datetime.timedelta(0, 1), data['endTime'])).first()
 
