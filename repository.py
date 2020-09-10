@@ -13,7 +13,11 @@ class repository:
         self.session.add(obj)
         self.session.commit()
         self.session.refresh(obj)
+        return obj
 
+    def updateById(self, obj, id, data):
+        self.session.query(obj).filter_by(id=id).update(data)
+        self.session.commit()
         return obj
 
     def findAppointmentBetweenDateTime(self, data):
@@ -24,3 +28,6 @@ class repository:
 
     def findPatientByName(self, data):
         return self.Patient.query.filter(func.lower(self.Patient.firstName) == func.lower(data['firstName']), func.lower(self.Patient.lastName) == func.lower(data['lastName']), func.lower(self.Patient.middleName) == func.lower(data['middleName'])).first()
+
+    def findBetweenDate(self, start, end):
+        return self.Appointment.query.filter(func.DATE(self.Appointment.startTime).between(start, end))
