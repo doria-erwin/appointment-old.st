@@ -2,7 +2,7 @@ from sqlalchemy import Date, func
 import datetime
 
 
-class repository:
+class Repository:
     def __init__(self, session, Appointment, Patient, Comment):
         self.session = session
         self.Appointment = Appointment
@@ -15,12 +15,12 @@ class repository:
         self.session.refresh(obj)
         return obj
 
-    def updateById(self, obj, id, data):
+    def update(self, obj, id, data):
         self.session.query(obj).filter_by(id=id).update(data)
         self.session.commit()
-        return obj
+        return obj.query.filter(obj.id == id).first()
 
-    def deleteById(self, obj, id):
+    def delete(self, obj, id):
         try:
             self.session.query(obj).filter_by(id=id).delete()
             self.session.commit()
@@ -28,9 +28,12 @@ class repository:
         except:
             return False
 
+    # determine if there's a overbooked
+    # added 1 second to the new starttime to exclude if existing starttime is equal to new booking starttime
     def findAppointmentBetweenDateTime(self, data):
         return self.Appointment.query.filter(self.Appointment.endTime.between(data['startTime'] + datetime.timedelta(0, 1), data['endTime'])).first()
 
+    # show appointment by date and patient if the patient already booked on that date
     def findAppointmentByDateAndPatient(self, data, patient):
         return self.Appointment.query.filter(func.DATE(self.Appointment.startTime) == data['startTime'].date(), self.Appointment.patient_id == patient.id).first()
 
