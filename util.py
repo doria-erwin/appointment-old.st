@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 
 
 def isBetween(start, date, end):
@@ -18,9 +18,7 @@ def isValidTime(startTime, endTime):
         startTime.date()), '%Y-%m-%d %H:%M:%S'), datetime.strptime('{} 17:01:00'.format(
             startTime.date()), '%Y-%m-%d %H:%M:%S')]
 
-    if startTime <= datetime.now():
-        return response("Invalid start time", False, 400)
-    elif startTime >= endTime:
+    if startTime >= endTime:
         return response("Invalid end time", False, 400)
     elif startTime.strftime("%a") == 'SUN':
         return response("Invalid date should Mon - Sat only", False, 400)
