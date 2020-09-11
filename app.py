@@ -6,10 +6,13 @@ from gevent.pywsgi import WSGIServer
 from config import HOST, PORT
 from service import Service
 from util import isValidTime
+from flask_cors import CORS
 
 app = Flask(__name__)
 app.config.from_pyfile('config.py')
 db = SQLAlchemy(app)
+
+CORS(app)
 
 
 class Comment(db.Model):
