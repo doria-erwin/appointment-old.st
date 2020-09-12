@@ -20,15 +20,15 @@ class Comment(db.Model):
     id = Column(Integer, primary_key=True)
     message = Column(Text(), nullable=False)
     appointment_id = Column(Integer, ForeignKey('appointment.id'))
-    appointment = db.relationship("Appointment", back_populates="comment")
+    appointment = db.relationship('Appointment', back_populates='comment')
 
     def __init__(self, data):
         self.message = data['message']
 
     def serialize(self):
         return{
-            "id": self.id,
-            "message": self.message,
+            'id': self.id,
+            'message': self.message,
         }
 
 
@@ -39,7 +39,7 @@ class Patient(db.Model):
     lastName = Column(String(50), nullable=False)
     middleName = Column(String(50), nullable=False)
     appointment_id = Column(Integer, ForeignKey('appointment.id'))
-    appointment = db.relationship("Appointment", back_populates="patient")
+    appointment = db.relationship('Appointment', back_populates='patient')
 
     def __init__(self, data):
         self.firstName = data['firstName']
@@ -48,10 +48,10 @@ class Patient(db.Model):
 
     def serialize(self):
         return {
-            "id": self.id,
-            "firstName": self.firstName,
-            "lastName": self.lastName,
-            "middleName": self.middleName
+            'id': self.id,
+            'firstName': self.firstName,
+            'lastName': self.lastName,
+            'middleName': self.middleName
         }
 
 
@@ -60,10 +60,10 @@ class Appointment(db.Model):
     id = Column(Integer, primary_key=True)
     startTime = Column(DateTime, nullable=False)
     endTime = Column(DateTime, nullable=False)
-    comment = db.relationship("Comment", uselist=False,
-                              back_populates="appointment", lazy='joined')
+    comment = db.relationship('Comment', uselist=False,
+                              back_populates='appointment', lazy='joined')
     patient = db.relationship(
-        "Patient", uselist=False, back_populates="appointment", lazy='joined')
+        'Patient', uselist=False, back_populates='appointment', lazy='joined')
 
     def __init__(self, data):
         self.startTime = data['startTime']
@@ -82,11 +82,11 @@ class Appointment(db.Model):
 
     def serialize(self):
         return{
-            "id": self.id,
-            "startTime": self.startTime.strftime('%Y-%m-%d %I:%M:%S'),
-            "endTime": self.endTime.strftime('%Y-%m-%d %I:%M:%S'),
-            "comment": self.comment.serialize(),
-            "patient": self.patient.serialize()
+            'id': self.id,
+            'startTime': self.startTime.strftime('%Y-%m-%d %I:%M:%S'),
+            'endTime': self.endTime.strftime('%Y-%m-%d %I:%M:%S'),
+            'comment': self.comment.serialize(),
+            'patient': self.patient.serialize()
         }
 
 
@@ -120,8 +120,8 @@ def findById(id):
     return service.findById(id)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     app.debug = True
     http_server = WSGIServer((HOST, PORT), app)
-    print("server running: {}:{}".format(HOST, PORT))
+    print('server running: {}:{}'.format(HOST, PORT))
     http_server.serve_forever()
