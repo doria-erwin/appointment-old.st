@@ -72,7 +72,7 @@ class Appointment(db.Model):
         self.comment = Comment(data['comment'])
 
     def update(self, data):
-        self.startTime = data['startTime'].fo
+        self.startTime = data['startTime']
         self.endTime = data['endTime']
         Patient.query.filter(
             Patient.id == data['patient']['id']).update(data['patient'])

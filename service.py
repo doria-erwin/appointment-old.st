@@ -23,8 +23,8 @@ class Service:
             return response(err.messages, False, 422)
         if self.repo.findAppointmentBetweenDateTime(data) != None:
             return response("This time already have a booking", False, 400)
-
-        return appointment_schema.dump(self.repo.create(self.Appointment(data)))
+        self.repo.create(self.Appointment(data))
+        return response("Successfully created", key="message")
 
     def update(self, request, id):
         appointment = self.Appointment.query.get(id)
@@ -56,10 +56,10 @@ class Service:
                 return validDates
 
             appointments = list(
-                map(lambda appointment: appointment.serialize(), self.repo.findBetweenDate(request.args.get('startDate'), request.args.get('endDate'))))
+                map(lambda appointment: appointment.serialize(), self.repo.findBetweenDate(request.args.get('startDate'), request.args.get('endDate'), request.args.get('search'))))
         else:
             appointments = list(
-                map(lambda appointment: appointment.serialize(), self.repo.findAll(self.Appointment)))
+                map(lambda appointment: appointment.serialize(), self.repo.findAllAppointments(request.args.get('search'))))
 
         return response(appointments, key="appointments")
 
@@ -73,4 +73,8 @@ class Service:
             return response("Unable to delete appointment please try again later", False, 422)
 
     def findById(self, id):
-        return response(appointment_schema.dump(self.Appointment.query.get(id)))
+        appointment = self.Appointment.query.get(id)
+        if appointment == None:
+            return response("Appointment not found", False, 422)
+
+        return response(appointment_schema.dump(appointment))
