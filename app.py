@@ -83,8 +83,8 @@ class Appointment(db.Model):
     def serialize(self):
         return{
             "id": self.id,
-            "startTime": self.startTime.strftime('%Y-%m-%d %I:%M:%S %p'),
-            "endTime": self.endTime.strftime('%Y-%m-%d %I:%M:%S %p'),
+            "startTime": self.startTime.strftime('%Y-%m-%d %I:%M:%S'),
+            "endTime": self.endTime.strftime('%Y-%m-%d %I:%M:%S'),
             "comment": self.comment.serialize(),
             "patient": self.patient.serialize()
         }
