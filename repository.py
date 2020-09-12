@@ -1,4 +1,4 @@
-from sqlalchemy import Date, func
+from sqlalchemy import Date, func, desc
 import datetime
 
 
@@ -23,10 +23,13 @@ class Repository:
         except:
             return False
 
+    def findAll(self, obj):
+        return self.session.query(obj).order_by(desc(obj.id))
+
     # determine if there's a overbooked
     # added 1 second to the new starttime to exclude if existing starttime is equal to new booking starttime
     def findAppointmentBetweenDateTime(self, data):
         return self.Appointment.query.filter(self.Appointment.endTime.between(data['startTime'] + datetime.timedelta(0, 1), data['endTime'])).first()
 
     def findBetweenDate(self, start, end):
-        return self.Appointment.query.filter(func.DATE(self.Appointment.startTime).between(start, end))
+        return self.Appointment.query.filter(func.DATE(self.Appointment.startTime).between(start, end)).order_by(desc(self.Appointment.id))
