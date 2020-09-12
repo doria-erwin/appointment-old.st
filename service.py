@@ -56,10 +56,10 @@ class Service:
                 return validDates
 
             appointments = list(
-                map(lambda appointment: appointment.serialize(), self.repo.findBetweenDate(request.args.get('startDate'), request.args.get('endDate'))))
+                map(lambda appointment: appointment.serialize(), self.repo.findBetweenDate(request.args.get('startDate'), request.args.get('endDate'), request.args.get('search'))))
         else:
             appointments = list(
-                map(lambda appointment: appointment.serialize(), self.repo.findAll(self.Appointment)))
+                map(lambda appointment: appointment.serialize(), self.repo.findAllAppointments(request.args.get('search'))))
 
         return response(appointments, key="appointments")
 
