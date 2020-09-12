@@ -72,7 +72,7 @@ class Appointment(db.Model):
         self.comment = Comment(data['comment'])
 
     def update(self, data):
-        self.startTime = data['startTime']
+        self.startTime = data['startTime'].fo
         self.endTime = data['endTime']
         Patient.query.filter(
             Patient.id == data['patient']['id']).update(data['patient'])
@@ -83,8 +83,8 @@ class Appointment(db.Model):
     def serialize(self):
         return{
             "id": self.id,
-            "startTime": self.startTime,
-            "endTime": self.endTime,
+            "startTime": self.startTime.strftime('%Y-%m-%d %I:%M:%S %p'),
+            "endTime": self.endTime.strftime('%Y-%m-%d %I:%M:%S %p'),
             "comment": self.comment.serialize(),
             "patient": self.patient.serialize()
         }
@@ -106,13 +106,18 @@ def updateAppointment(id):
 
 
 @app.route('/appointments', methods=['GET'])
-def showAll():
-    return service.show(request)
+def findAll():
+    return service.findAll(request)
 
 
 @app.route('/appointment/<int:id>', methods=['DELETE'])
 def delete(id):
     return service.delete(id)
+
+
+@app.route('/appointment/<int:id>', methods=['GET'])
+def findById(id):
+    return service.findById(id)
 
 
 if __name__ == "__main__":

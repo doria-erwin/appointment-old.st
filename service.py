@@ -1,7 +1,7 @@
 
 from schema import appointment_schema, patient_schema
 from marshmallow import ValidationError
-from util import isValidTime, response
+from util import isValidTime, isValidDates, response
 from datetime import datetime
 from repository import Repository
 
@@ -24,7 +24,7 @@ class Service:
         if self.repo.findAppointmentBetweenDateTime(data) != None:
             return response("This time already have a booking", False, 400)
 
-        return response(appointment_schema.dump(self.repo.create(self.Appointment(data))))
+        return appointment_schema.dump(self.repo.create(self.Appointment(data)))
 
     def update(self, request, id):
         appointment = self.Appointment.query.get(id)
@@ -49,28 +49,17 @@ class Service:
         appointment.update(data)
         return response("Successfully updated", key="message")
 
-    def show(self, request):
-        try:
-            start = datetime.strptime('{}'.format(
-                request.args.get('startDate')), '%Y-%m-%d')
-        except:
-            return response("invalid startDate format should be YYYY-mm-dd", False, 422)
+    def findAll(self, request):
+        if request.args.get('startDate'):
+            validDates = isValidDates(request)
+            if validDates:
+                return validDates
 
-        try:
-            end = datetime.strptime('{}'.format(
-                request.args.get('endDate')), '%Y-%m-%d')
-        except:
-            return response("invalid endDate format should be YYYY-mm-dd", False, 422)
-
-        if start > end:
-            return response("invalid endDate", False, 422)
-        elif start == end:
-            return response("startDate and endDate should not be equal", False, 422)
-        elif start is None or end is None:
-            return response("required query parameters startDate and endDate", False, 422)
-
-        appointments = list(
-            map(lambda appointment: appointment.serialize(), self.repo.findBetweenDate(start, end)))
+            appointments = list(
+                map(lambda appointment: appointment.serialize(), self.repo.findBetweenDate(request.args.get('startDate'), request.args.get('endDate'))))
+        else:
+            appointments = list(
+                map(lambda appointment: appointment.serialize(), self.repo.findAll(self.Appointment)))
 
         return response(appointments, key="appointments")
 
@@ -82,3 +71,6 @@ class Service:
             return response("Successfully deleted", key="message")
         else:
             return response("Unable to delete appointment please try again later", False, 422)
+
+    def findById(self, id):
+        return response(appointment_schema.dump(self.Appointment.query.get(id)))
